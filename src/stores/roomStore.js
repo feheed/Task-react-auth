@@ -1,23 +1,16 @@
 import { makeAutoObservable, observable, action } from "mobx";
 import axios from "axios";
+import api from "./api";
 
 class RoomStore {
   rooms = [];
 
   constructor() {
-    makeAutoObservable(this, {
-      rooms: observable,
-      fetchRoom: action,
-      createRoom: action,
-      deleteRoom: action,
-      updateRoom: action,
-    });
+    makeAutoObservable(this, {});
   }
   fetchRoom = async () => {
     try {
-      const response = await axios.get(
-        "https://coded-task-authentication-be.herokuapp.com/rooms"
-      );
+      const response = await api.get("/rooms");
       this.rooms = response.data;
     } catch (e) {
       console.log(e);
@@ -25,10 +18,7 @@ class RoomStore {
   };
   createRoom = async (newRoom) => {
     try {
-      const response = await axios.post(
-        "https://coded-task-authentication-be.herokuapp.com/rooms",
-        newRoom
-      );
+      const response = await api.post("/rooms", newRoom);
 
       this.rooms.push(response.data);
     } catch (e) {
@@ -40,9 +30,7 @@ class RoomStore {
 
   deleteRoom = async (id) => {
     try {
-      await axios.delete(
-        `https://coded-task-authentication-be.herokuapp.com/rooms/${id}`
-      );
+      await api.delete(`/rooms/${id}`);
       const tempRoom = this.rooms.filter((room) => room.id !== id);
       this.rooms = tempRoom;
     } catch (e) {
@@ -52,10 +40,7 @@ class RoomStore {
   };
   updateRoom = async (updatedRoom) => {
     try {
-      const response = await axios.put(
-        `https://coded-task-authentication-be.herokuapp.com/rooms/${updatedRoom.id}`,
-        updatedRoom
-      );
+      const response = await axios.put(`/rooms/${updatedRoom.id}`, updatedRoom);
       const tempRoom = this.rooms.map((room) =>
         room.id === updatedRoom.id ? response.data : room
       );
